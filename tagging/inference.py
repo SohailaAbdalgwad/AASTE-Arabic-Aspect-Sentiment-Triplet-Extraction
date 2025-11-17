@@ -27,7 +27,7 @@ def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D',
 
 # Keep your original function for backward compatibility
 def original_extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
-     """
+    """
     Decodes a tag table from the model into a list of aspect-sentiment-opinion triplets.
 
     This function implements a greedy inference algorithm to find the most likely
@@ -121,8 +121,6 @@ def original_extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'
         'triplets': sorted(valid_triplets, key=lambda x: (x[0][0], x[0][-1], x[1][0], x[1][-1]))
     }
 
-    pass
-   
 def find_sub_spans(span_mask, offset):
     """Helper to find and return indices of true values in a boolean mask."""
     indices = (span_mask.nonzero().squeeze() + offset).tolist()
