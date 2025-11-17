@@ -1,6 +1,32 @@
 import torch
 
-def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
+def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D', 
+                              confidence_table=None, confidence_thresholds=None):
+    """
+    Enhanced version that supports both original and confidence-based extraction.
+    """
+    if confidence_table is None:
+        # Fall back to original implementation
+        return original_extract_triplets_from_tags(tag_table, id_to_sentiment, version)
+    else:
+        # Use confidence-based extraction
+        if confidence_thresholds is None:
+            confidence_thresholds = {
+                'aspect': 0.7,
+                'opinion': 0.7, 
+                'sentiment': 0.6
+            }
+        
+        return extract_triplets_from_tags_with_confidence(
+            tag_table, confidence_table, id_to_sentiment,
+            aspect_confidence_threshold=confidence_thresholds['aspect'],
+            opinion_confidence_threshold=confidence_thresholds['opinion'],
+            sentiment_confidence_threshold=confidence_thresholds['sentiment'],
+            version=version
+        )
+
+# Keep your original function for backward compatibility
+def original_extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
     """
     Decodes a tag table from the model into a list of aspect-sentiment-opinion triplets.
 
