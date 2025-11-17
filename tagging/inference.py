@@ -1,7 +1,33 @@
 import torch
 
-def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
+def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D', 
+                              confidence_table=None, confidence_thresholds=None):
     """
+    Enhanced version that supports both original and confidence-based extraction.
+    """
+    if confidence_table is None:
+        # Fall back to original implementation
+        return original_extract_triplets_from_tags(tag_table, id_to_sentiment, version)
+    else:
+        # Use confidence-based extraction
+        if confidence_thresholds is None:
+            confidence_thresholds = {
+                'aspect': 0.7,
+                'opinion': 0.7, 
+                'sentiment': 0.6
+            }
+        
+        return extract_triplets_from_tags_with_confidence(
+            tag_table, confidence_table, id_to_sentiment,
+            aspect_confidence_threshold=confidence_thresholds['aspect'],
+            opinion_confidence_threshold=confidence_thresholds['opinion'],
+            sentiment_confidence_threshold=confidence_thresholds['sentiment'],
+            version=version
+        )
+
+# Keep your original function for backward compatibility
+def original_extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
+     """
     Decodes a tag table from the model into a list of aspect-sentiment-opinion triplets.
 
     This function implements a greedy inference algorithm to find the most likely
@@ -95,6 +121,8 @@ def extract_triplets_from_tags(tag_table, id_to_sentiment, version='3D'):
         'triplets': sorted(valid_triplets, key=lambda x: (x[0][0], x[0][-1], x[1][0], x[1][-1]))
     }
 
+    pass
+   
 def find_sub_spans(span_mask, offset):
     """Helper to find and return indices of true values in a boolean mask."""
     indices = (span_mask.nonzero().squeeze() + offset).tolist()
